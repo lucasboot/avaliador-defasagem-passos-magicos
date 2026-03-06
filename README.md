@@ -64,6 +64,47 @@ source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 ```
 
+## Containerização (Docker)
+
+Para facilitar o setup em qualquer máquina, você pode rodar tudo com Docker.
+
+### Pré-requisitos
+
+- Docker
+- Docker Compose (comando `docker compose`)
+
+### Setup inicial
+
+1. Copie o arquivo de exemplo de variáveis:
+
+```bash
+cp .env.example .env
+```
+
+2. Preencha no `.env` pelo menos:
+   - `OPENAI_API_KEY`
+   - `OPENAI_MODEL`
+
+### Opção A - Docker Compose (recomendada)
+
+```bash
+docker compose up --build
+```
+
+### Opção B - Docker puro
+
+```bash
+docker build -t classificador-defasagem .
+docker run -p 8000:8000 --env-file .env classificador-defasagem
+```
+
+### Acesso
+
+- Interface web: http://localhost:8000/
+- Documentação Swagger: http://localhost:8000/docs
+
+Observação: o arquivo `.env` deve existir no host e não é copiado para dentro da imagem.
+
 ## Como Rodar Localmente
 
 1. Configure as variáveis de ambiente (crie um arquivo `.env` se desejar):
@@ -158,26 +199,6 @@ A rota `GET /` renderiza uma página com:
 - Mensagens de erro em caso de falha
 
 A classificação é feita via `fetch` sem recarregar a página.
-
-## Containerização (Docker)
-
-A aplicação está preparada para containerização. Exemplo de `Dockerfile`:
-
-```dockerfile
-FROM python:3.12-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-Execute com:
-
-```bash
-docker build -t classificador-defasagem .
-docker run -p 8000:8000 -e OPENAI_API_KEY=... -e OPENAI_MODEL=... classificador-defasagem
-```
 
 ## Licença
 
