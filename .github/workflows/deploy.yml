@@ -58,4 +58,4 @@ jobs:
       - name: Deploy no Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service "${RAILWAY_SERVICE_NAME}"
+        run: railway up --service "avaliador-defasagem-passos-magicos"
