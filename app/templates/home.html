@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificador de Risco de Defasagem Escolar</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="container">
+        <header class="header">
+            <h1>Classificador de Risco de Defasagem Escolar</h1>
+            <p class="description">
+                Digite abaixo o caso do aluno (idade, fase, indicadores, etc.) e clique em Classificar
+                para obter a classificação de risco: em_fase, moderada ou severa.
+            </p>
+        </header>
+
+        <section class="input-section">
+            <label for="student-text">Caso do aluno</label>
+            <textarea
+                id="student-text"
+                name="student-text"
+                rows="8"
+                placeholder="Ex: Aluno de 13 anos que está há 2 anos na associação. Está na fase 3..."
+            ></textarea>
+            <button id="classify-btn" type="button">Classificar</button>
+        </section>
+
+        <div id="loading" class="loading hidden">
+            <span class="spinner"></span>
+            <span>Classificando...</span>
+        </div>
+
+        <section id="result-section" class="result-section hidden">
+            <h2>Resultado</h2>
+            <div id="prediction" class="prediction"></div>
+            <p id="explanation" class="explanation"></p>
+            <details class="raw-output-details">
+                <summary>Resposta bruta do modelo</summary>
+                <pre id="raw-output"></pre>
+            </details>
+        </section>
+
+        <section id="error-section" class="error-section hidden">
+            <h2>Erro</h2>
+            <p id="error-message" class="error-message"></p>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
