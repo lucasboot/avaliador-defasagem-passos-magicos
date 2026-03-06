@@ -1,10 +1,23 @@
 # Classificador de Risco de Defasagem Escolar
 
+**URL do projeto (produção):** [https://avaliador-defasagem-passos-magicos-production.up.railway.app/](https://avaliador-defasagem-passos-magicos-production.up.railway.app/)
+
 API FastAPI para classificação de risco de defasagem escolar, desenvolvida para o Datathon da Passos Mágicos. Utiliza um modelo LLM fine-tuned da OpenAI para classificar casos de alunos em uma das três categorias: **em_fase**, **moderada** ou **severa**.
 
 ## Visão Geral
 
 A solução recebe um texto em linguagem natural descrevendo o aluno (idade, fase na associação, indicadores como IDA, IEG, IAA, IPS, IPP, IPV, IAN, INDE, etc.) e retorna a classificação de risco de defasagem. A resposta é normalizada e validada para garantir que apenas uma das três classes seja retornada. Opcionalmente, uma segunda chamada a um modelo comum da OpenAI (ex.: gpt-4o-mini) gera uma explicação breve e humanizada da classificação.
+
+## Stack Tecnológica
+
+- **Backend/API**: Python 3 + FastAPI + Uvicorn
+- **Validação de dados**: Pydantic
+- **LLM / IA**: OpenAI API (modelo fine-tuned `ft:gpt-4o-2024-08-06:alura:passos:DGVK6Um8`)
+- **Interface web**: HTML + CSS + JavaScript (fetch API)
+- **Testes**: Pytest + coverage
+- **Dados e avaliação**: JSONL + scripts Python em `scripts/`
+- **Containerização**: Docker + Docker Compose
+- **CI/CD**: GitHub Actions + deploy no Railway
 
 ## Arquitetura
 
@@ -198,7 +211,7 @@ O projeto possui esteira de CI em `.github/workflows/deploy.yml` para validar qu
 5. Testes com `pytest` e cobertura minima de `80%` (`--cov-fail-under=80`).
 6. Health check no endpoint `/health` via `TestClient`.
 7. Avaliação offline com `python scripts/run_eval.py`.
-8. Avaliação do endpoint `/predict` com `python scripts/eval_predict_endpoint.py` (falha se `accuracy < 0.80`).
+8. Avaliação do endpoint `/predict` com `python scripts/eval_predict_endpoint.py` (falha se `accuracy < 0.70`).
 
 ### Como acontece o deploy no Railway
 
