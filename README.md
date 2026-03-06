@@ -242,6 +242,8 @@ Para as etapas de avaliação do modelo no CI, configure no GitHub:
 curl https://<seu-dominio-railway>/health
 ```
 
+Observação: o monitoramento contínuo de logs da aplicação é feito no painel de monitoramento do Railway.
+
 ## Como Chamar a API
 
 ### Predição (POST /predict)
