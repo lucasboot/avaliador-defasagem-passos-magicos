@@ -1,0 +1,60 @@
+name: CI/CD Railway Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PYTHON_VERSION: "3.12"
+  RAILWAY_SERVICE_NAME: "app"
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar import da aplicacao
+        run: python -c "from app.main import app; print(app.title)"
+
+      - name: Rodar testes com pytest
+        run: pytest tests/ -v --cov=app --cov-report=term-missing
+
+      - name: Validar endpoint de saude
+        run: |
+          python - <<'PY'
+          from fastapi.testclient import TestClient
+          from app.main import app
+
+          client = TestClient(app)
+          response = client.get("/health")
+          assert response.status_code == 200, f"Status inesperado: {response.status_code}"
+          assert response.json().get("status") == "ok", f"Payload inesperado: {response.json()}"
+          print("Healthcheck OK")
+          PY
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy no Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service "${RAILWAY_SERVICE_NAME}"

@@ -148,6 +148,62 @@ Com cobertura:
 pytest tests/ -v --cov=app --cov-report=term-missing
 ```
 
+## CI/CD
+
+O projeto possui esteira de CI/CD em `.github/workflows/deploy.yml` para executar validacoes e publicar automaticamente no Railway.
+
+### Quando o deploy acontece
+
+- O workflow dispara em todo `push` na branch `main`.
+- O deploy so acontece se todas as validacoes anteriores passarem.
+
+### O que a esteira executa
+
+1. Checkout do codigo.
+2. Setup do Python.
+3. Instalacao de dependencias (`requirements.txt`).
+4. Validacao de import da aplicacao FastAPI.
+5. Testes com `pytest`.
+6. Health check no endpoint `/health` via `TestClient`.
+7. Instalacao do Railway CLI.
+8. Deploy com `railway up`.
+
+### Secret necessario
+
+- O workflow usa o secret `RAILWAY_TOKEN` no GitHub Actions.
+- Sem esse secret, o passo de deploy falha.
+
+### Como alterar o nome do servico Railway
+
+- No topo de `.github/workflows/deploy.yml`, ajuste:
+
+```yaml
+env:
+  RAILWAY_SERVICE_NAME: "app"
+```
+
+- Esse valor e usado no comando:
+
+```bash
+railway up --service "${RAILWAY_SERVICE_NAME}"
+```
+
+### Como acompanhar a execucao no GitHub Actions
+
+1. Acesse a aba **Actions** do repositorio no GitHub.
+2. Abra o workflow **CI/CD Railway Deploy**.
+3. Clique na execucao do commit para ver logs de cada etapa.
+
+### Como verificar o deploy no Railway
+
+1. No Railway, abra o projeto e o servico implantado.
+2. Confira os logs da ultima implantacao.
+3. Valide o endpoint de saude da aplicacao publicada:
+
+```bash
+curl https://<seu-dominio-railway>/health
+```
+
 ## Como Chamar a API
 
 ### Predição (POST /predict)
