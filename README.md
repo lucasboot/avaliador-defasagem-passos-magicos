@@ -148,14 +148,17 @@ Com cobertura:
 pytest tests/ -v --cov=app --cov-report=term-missing
 ```
 
+Com cobertura via Docker:
+
+```bash
+docker compose run --rm -e PYTHONPATH=/app app python -m pytest tests --cov=app --cov-report=term-missing
+```
+
+Cobertura total atual da suíte de testes: **94%**.
+
 ## CI/CD
 
-O projeto possui esteira de CI/CD em `.github/workflows/deploy.yml` para executar validacoes e publicar automaticamente no Railway.
-
-### Quando o deploy acontece
-
-- O workflow dispara em todo `push` na branch `main`.
-- O deploy so acontece se todas as validacoes anteriores passarem.
+O projeto possui esteira de CI em `.github/workflows/deploy.yml` para validar qualidade do codigo a cada `push` na branch `main`.
 
 ### O que a esteira executa
 
@@ -163,35 +166,18 @@ O projeto possui esteira de CI/CD em `.github/workflows/deploy.yml` para executa
 2. Setup do Python.
 3. Instalacao de dependencias (`requirements.txt`).
 4. Validacao de import da aplicacao FastAPI.
-5. Testes com `pytest`.
+5. Testes com `pytest` e cobertura minima de `80%` (`--cov-fail-under=80`).
 6. Health check no endpoint `/health` via `TestClient`.
-7. Instalacao do Railway CLI.
-8. Deploy com `railway up`.
 
-### Secret necessario
+### Como acontece o deploy no Railway
 
-- O workflow usa o secret `RAILWAY_TOKEN` no GitHub Actions.
-- Sem esse secret, o passo de deploy falha.
-
-### Como alterar o nome do servico Railway
-
-- No topo de `.github/workflows/deploy.yml`, ajuste:
-
-```yaml
-env:
-  RAILWAY_SERVICE_NAME: "app"
-```
-
-- Esse valor e usado no comando:
-
-```bash
-railway up --service "${RAILWAY_SERVICE_NAME}"
-```
+- O deploy e feito pelo proprio Railway, pois o repositorio esta conectado na branch `main`.
+- Com a opcao **Wait for CI** ativada no Railway, o deploy so avanca quando o GitHub Actions finalizar com sucesso.
 
 ### Como acompanhar a execucao no GitHub Actions
 
 1. Acesse a aba **Actions** do repositorio no GitHub.
-2. Abra o workflow **CI/CD Railway Deploy**.
+2. Abra o workflow **CI FastAPI**.
 3. Clique na execucao do commit para ver logs de cada etapa.
 
 ### Como verificar o deploy no Railway

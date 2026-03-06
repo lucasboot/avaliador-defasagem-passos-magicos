@@ -1,4 +1,4 @@
-name: CI/CD Railway Deploy
+name: CI FastAPI
 
 on:
   push:
@@ -7,11 +7,10 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  RAILWAY_SERVICE_NAME: "app"
   PYTHONPATH: ${{ github.workspace }}
 
 jobs:
-  test-and-deploy:
+  test-and-health:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +30,8 @@ jobs:
       - name: Validar import da aplicacao
         run: python -c "from app.main import app; print(app.title)"
 
-      - name: Rodar testes com pytest
-        run: pytest tests/ -v --cov=app --cov-report=term-missing
+      - name: Rodar testes com cobertura minima de 80%
+        run: pytest tests/ -v --cov=app --cov-report=term-missing --cov-fail-under=80
 
       - name: Validar endpoint de saude
         run: |
@@ -47,15 +46,3 @@ jobs:
           print("Healthcheck OK")
           PY
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Instalar Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy no Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service "avaliador-defasagem-passos-magicos"
