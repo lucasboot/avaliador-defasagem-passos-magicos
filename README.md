@@ -85,7 +85,7 @@ cp .env.example .env
    - `OPENAI_API_KEY`
    - `OPENAI_MODEL`
 
-### Opção A - Docker Compose (recomendada)
+### Opção - Docker Compose (recomendada)
 
 ```bash
 docker compose up --build
@@ -95,13 +95,6 @@ Para parar:
 
 ```bash
 docker compose down
-```
-
-### Opção B - Docker puro
-
-```bash
-docker build -t classificador-defasagem .
-docker run -p 8000:8000 --env-file .env classificador-defasagem
 ```
 
 ### Acesso
@@ -155,6 +148,42 @@ docker compose run --rm -e PYTHONPATH=/app app python -m pytest tests --cov=app 
 ```
 
 Cobertura total atual da suíte de testes: **94%**.
+
+## Como foi gerado o modelo fine-tuned
+
+O fine-tuning foi feito para classificar risco de defasagem escolar em `em_fase`, `moderada` e `severa`.
+
+- **Modelo final**: `ft:gpt-4o-2024-08-06:alura:passos:DGVK6Um8`
+- **Base model**: `gpt-4o-2024-08-06`
+- **Configuração de inferência**: `temperature=0` e `seed=42`
+
+### Pipeline resumido
+
+1. **Geração dos casos** a partir do dataset `PEDE_PASSOS_DATASET_FIAP.csv` com `input-year=2021` e `label-year=2022`.
+2. **Montagem dos arquivos** em `data/processed/` e split estratificado (`70%` treino, `15%` validação, `15%` teste, seed `42`).
+3. **Conversão para formato OpenAI** com mensagens `system`, `user` e `assistant` (label).
+4. **Upload no Playground da OpenAI** dos arquivos de treino e validação para executar o fine-tuning supervisionado.
+
+### Arquivos principais gerados
+
+| Arquivo | Linhas | Uso |
+| --- | --- | --- |
+| `data/processed/student_cases.jsonl` | 470 | Dataset completo (formato simples) |
+| `data/processed/student_cases_chat.jsonl` | 470 | Dataset completo (formato chat) |
+| `data/processed/train.jsonl` | 328 | Treino (split 70%) |
+| `data/processed/validation.jsonl` | 70 | Validação (split 15%) |
+| `data/processed/test.jsonl` | 72 | Teste final (split 15%) |
+| `data/processed/train_openai.jsonl` | 328 | Treino no formato OpenAI |
+| `data/processed/validation_openai.jsonl` | 70 | Validação no formato OpenAI |
+
+### Regras de rotulagem (resumo)
+
+- Quando disponível, usa `DEFASAGEM_{ano}`.
+- Quando não disponível, calcula: `defasagem = FASE_{ano} - NIVEL_IDEAL_{ano}`.
+- Mapeamento para classe:
+  - `>= 0` -> `em_fase`
+  - `-1` -> `moderada`
+  - `<= -2` -> `severa`
 
 ## CI/CD
 
@@ -223,6 +252,20 @@ Resposta:
 ```
 
 O campo `explanation` é gerado por um modelo comum (ex.: gpt-4o-mini) e pode ser desativado passando `"include_explanation": false` no body.
+
+Mais exemplos de entrada (casos reais do `data/processed/test.jsonl`):
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"student_text": "Aluno de 10 anos que está há 2 anos na associação. Está na fase 2 da associação. O nível ideal para sua idade seria Nível 2 (5o e 6o ano). Possui desempenho acadêmico IDA de 5.3, engajamento IEG de 4.6, IAA de 9.5, indicador psicossocial IPS de 7.5, indicador psicopedagógico IPP de 8.5, IPV de 8.7, IAN de 10. O aluno INDE de 7.25, pedra Ametista, não atingiu ponto de virada no ano avaliado."}'
+```
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"student_text": "Aluno de 15 anos que está há 1 anos na associação. Está na fase 3 da associação. O nível ideal para sua idade seria Nível 6 (2o EM). Possui desempenho acadêmico IDA de 5.1, engajamento IEG de 5, IAA de 7.1, indicador psicossocial IPS de 7.5, indicador psicopedagógico IPP de 7.1, IPV de 6.5, IAN de 2.5. O aluno INDE de 5.74, pedra Ágata, não atingiu ponto de virada no ano avaliado."}'
+```
 
 ### Health (GET /health)
 
