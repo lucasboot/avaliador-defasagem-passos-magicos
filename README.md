@@ -168,11 +168,21 @@ O projeto possui esteira de CI em `.github/workflows/deploy.yml` para validar qu
 4. Validacao de import da aplicacao FastAPI.
 5. Testes com `pytest` e cobertura minima de `80%` (`--cov-fail-under=80`).
 6. Health check no endpoint `/health` via `TestClient`.
+7. Avaliação offline com `python scripts/run_eval.py`.
+8. Avaliação do endpoint `/predict` com `python scripts/eval_predict_endpoint.py` (falha se `accuracy < 0.80`).
 
 ### Como acontece o deploy no Railway
 
 - O deploy e feito pelo proprio Railway, pois o repositorio esta conectado na branch `main`.
 - Com a opcao **Wait for CI** ativada no Railway, o deploy so avanca quando o GitHub Actions finalizar com sucesso.
+
+### Segredos usados na esteira
+
+Para as etapas de avaliação do modelo no CI, configure no GitHub:
+
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `OPENAI_EXPLANATION_MODEL` (opcional, usado apenas em chamadas com explicação)
 
 ### Como acompanhar a execucao no GitHub Actions
 

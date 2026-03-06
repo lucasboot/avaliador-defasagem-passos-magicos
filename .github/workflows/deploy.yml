@@ -8,6 +8,10 @@ on:
 env:
   PYTHON_VERSION: "3.12"
   PYTHONPATH: ${{ github.workspace }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+  OPENAI_EXPLANATION_MODEL: ${{ secrets.OPENAI_EXPLANATION_MODEL }}
+  EVAL_MIN_ACCURACY: "0.70"
 
 jobs:
   test-and-health:
@@ -45,4 +49,12 @@ jobs:
           assert response.json().get("status") == "ok", f"Payload inesperado: {response.json()}"
           print("Healthcheck OK")
           PY
+
+      - name: Rodar avaliacao offline (run_eval)
+        run: python scripts/run_eval.py
+
+      - name: Validar classificacao via endpoint /predict
+        run: |
+          python scripts/eval_predict_endpoint.py \
+            --min-accuracy "${EVAL_MIN_ACCURACY}"
 
