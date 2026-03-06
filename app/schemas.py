@@ -1,6 +1,3 @@
-"""
-Schemas Pydantic para contratos da API.
-"""
 
 from typing import Literal
 
@@ -10,7 +7,6 @@ PredictionClass = Literal["em_fase", "moderada", "severa"]
 
 
 class PredictRequest(BaseModel):
-    """Request para o endpoint de predição."""
 
     student_text: str = Field(..., min_length=1, description="Texto descrevendo o aluno")
     include_explanation: bool = Field(
@@ -20,7 +16,6 @@ class PredictRequest(BaseModel):
 
 
 class PredictResponse(BaseModel):
-    """Response do endpoint de predição."""
 
     prediction: PredictionClass
     model: str
@@ -30,7 +25,6 @@ class PredictResponse(BaseModel):
 
 
 class EvalResponse(BaseModel):
-    """Response do endpoint de avaliação."""
 
     total: int
     accuracy: float

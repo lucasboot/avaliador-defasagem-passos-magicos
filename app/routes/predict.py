@@ -1,6 +1,3 @@
-"""
-Rota de predição de risco de defasagem.
-"""
 
 import logging
 
@@ -18,9 +15,6 @@ logger = logging.getLogger(__name__)
 
 @router.post("/predict", response_model=PredictResponse)
 def predict(request: Request, body: PredictRequest) -> PredictResponse:
-    """
-    Classifica o risco de defasagem escolar a partir do texto do aluno.
-    """
     set_request_id()
     logger.info("Predict request received", extra={"student_text_len": len(body.student_text)})
 

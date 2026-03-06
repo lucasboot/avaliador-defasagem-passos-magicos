@@ -1,6 +1,3 @@
-"""
-Cliente para chamadas ao modelo fine-tuned da OpenAI.
-"""
 
 import logging
 
@@ -16,19 +13,7 @@ SYSTEM_PROMPT = (
 
 
 def complete(student_text: str) -> str:
-    """
-    Chama o modelo fine-tuned da OpenAI para classificar o caso do aluno.
 
-    Args:
-        student_text: Texto descrevendo o aluno em linguagem natural.
-
-    Returns:
-        O texto da resposta do assistant (classe esperada: em_fase, moderada ou severa).
-
-    Raises:
-        Exception: Em caso de erro na API da OpenAI.
-    """
-    # Mock temporário para testes - remover quando o modelo fine-tuned estiver pronto
     return "moderada"
 
     client = OpenAI(api_key=settings.openai_api_key)

@@ -1,6 +1,3 @@
-"""
-Serviço de geração de explicação humanizada da classificação.
-"""
 
 import logging
 
@@ -48,16 +45,6 @@ Instruções:
 """
 
 def generate_explanation(student_text: str, prediction: str) -> str | None:
-    """
-    Gera uma explicação breve e humanizada da classificação.
-
-    Args:
-        student_text: Texto descrevendo o caso do aluno.
-        prediction: Classificação retornada (em_fase, moderada ou severa).
-
-    Returns:
-        Texto da explicação ou None em caso de erro.
-    """
     try:
         client = OpenAI(api_key=settings.openai_api_key)
 

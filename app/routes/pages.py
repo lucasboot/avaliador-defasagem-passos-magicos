@@ -1,6 +1,3 @@
-"""
-Rota da página home.
-"""
 
 from pathlib import Path
 
@@ -16,5 +13,4 @@ templates = Jinja2Templates(directory=str(templates_dir))
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    """Renderiza a página home com interface de chat para classificação."""
     return templates.TemplateResponse(request, "home.html")

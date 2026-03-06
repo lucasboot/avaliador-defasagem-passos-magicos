@@ -1,6 +1,3 @@
-"""
-Serviço de avaliação do classificador sobre dataset JSONL.
-"""
 
 import json
 import logging
@@ -15,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 class EvalResult(TypedDict):
-    """Resultado da avaliação."""
 
     total: int
     accuracy: float
@@ -26,18 +22,6 @@ class EvalResult(TypedDict):
 
 
 def run_evaluation(dataset_path: Path, max_errors: int = 10) -> EvalResult:
-    """
-    Executa avaliação do classificador sobre o arquivo JSONL.
-
-    Cada linha deve ter formato: {"input_text": "...", "label": "em_fase|moderada|severa"}
-
-    Args:
-        dataset_path: Caminho para o arquivo test.jsonl.
-        max_errors: Número máximo de erros a incluir na lista resumida.
-
-    Returns:
-        EvalResult com métricas e lista de erros.
-    """
     y_true: list[str] = []
     y_pred: list[str] = []
     errors: list[dict] = []

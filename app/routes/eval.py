@@ -1,6 +1,3 @@
-"""
-Rota de avaliação do classificador.
-"""
 
 import logging
 from pathlib import Path
@@ -17,9 +14,6 @@ logger = logging.getLogger(__name__)
 
 @router.post("/eval", response_model=EvalResponse)
 def eval_route() -> EvalResponse:
-    """
-    Executa avaliação do classificador sobre o arquivo test.jsonl.
-    """
     dataset_path = settings.eval_dataset_path_resolved
 
     if not dataset_path.exists():
