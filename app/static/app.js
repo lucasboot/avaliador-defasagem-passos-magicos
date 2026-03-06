@@ -8,6 +8,60 @@
     const rawOutputEl = document.getElementById("raw-output");
     const errorMessageEl = document.getElementById("error-message");
 
+    function toTitleCase(value) {
+        return value
+            .split(" ")
+            .filter(Boolean)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    }
+
+    function normalizePrediction(prediction) {
+        return String(prediction || "")
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^\w\s]/g, "")
+            .replace(/\s+/g, "_");
+    }
+
+    function formatPredictionLabel(prediction) {
+        const normalized = normalizePrediction(prediction);
+
+        if (normalized.includes("severa")) {
+            return "Severa";
+        }
+
+        if (normalized.includes("moderada")) {
+            return "Moderada";
+        }
+
+        if (normalized.includes("em_fase")) {
+            return "Em Fase";
+        }
+
+        return toTitleCase(normalized.replace(/_/g, " "));
+    }
+
+    function getPredictionTone(prediction) {
+        const normalized = normalizePrediction(prediction);
+
+        if (normalized.includes("severa")) {
+            return "error";
+        }
+
+        if (normalized.includes("moderada")) {
+            return "warning";
+        }
+
+        if (normalized.includes("em_fase")) {
+            return "success";
+        }
+
+        return "neutral";
+    }
+
     function hideAll() {
         loading.classList.add("hidden");
         resultSection.classList.add("hidden");
@@ -21,7 +75,9 @@
 
     function showResult(prediction, rawOutput, explanation) {
         hideAll();
-        predictionEl.textContent = prediction;
+        predictionEl.textContent = formatPredictionLabel(prediction);
+        predictionEl.classList.remove("prediction--success", "prediction--warning", "prediction--error", "prediction--neutral");
+        predictionEl.classList.add(`prediction--${getPredictionTone(prediction)}`);
         rawOutputEl.textContent = rawOutput || "(vazio)";
         const explanationEl = document.getElementById("explanation");
         if (explanation && explanation.trim()) {

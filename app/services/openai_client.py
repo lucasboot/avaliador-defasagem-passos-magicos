@@ -13,9 +13,6 @@ SYSTEM_PROMPT = (
 
 
 def complete(student_text: str) -> str:
-
-    return "moderada"
-
     client = OpenAI(api_key=settings.openai_api_key)
 
     response = client.chat.completions.create(

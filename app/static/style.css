@@ -152,8 +152,23 @@ textarea::placeholder {
 .prediction {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--success);
     margin-bottom: 1rem;
+}
+
+.prediction--success {
+    color: var(--success);
+}
+
+.prediction--warning {
+    color: var(--warning);
+}
+
+.prediction--error {
+    color: var(--error);
+}
+
+.prediction--neutral {
+    color: var(--text);
 }
 
 .explanation {

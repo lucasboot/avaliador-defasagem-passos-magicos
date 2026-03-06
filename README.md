@@ -91,6 +91,12 @@ cp .env.example .env
 docker compose up --build
 ```
 
+Para parar:
+
+```bash
+docker compose down
+```
+
 ### Opção B - Docker puro
 
 ```bash
@@ -128,6 +134,12 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ```bash
 pytest tests/ -v
+```
+
+Com Docker (sem subir a API):
+
+```bash
+docker compose run --rm app pytest tests/ -v
 ```
 
 Com cobertura:
@@ -172,6 +184,12 @@ Executa a avaliação sobre o arquivo `data/processed/test.jsonl`:
 
 ```bash
 curl -X POST http://localhost:8000/eval
+```
+
+Para rodar a avaliação direto no container (sem chamar endpoint HTTP):
+
+```bash
+docker compose run --rm app python scripts/run_eval.py
 ```
 
 Resposta:
